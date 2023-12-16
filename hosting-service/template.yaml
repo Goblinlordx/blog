@@ -30,7 +30,7 @@ Parameters:
   CloudFrontPriceClass:
     Type: String
     Description: "The price class for CloudFront distribution"
-    Default: "PriceClass_100"
+    Default: "PriceClass_200"
     AllowedValues:
     - PriceClass_100
     - PriceClass_200
