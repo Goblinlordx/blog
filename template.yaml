@@ -3,16 +3,6 @@ Transform:
   - AWS::Serverless-2016-10-31
 
 Parameters:
-  UserPoolDomainPrefix:
-    Type: String
-  GoogleClientId:
-    Type: String
-    Description: Google OAuth Client ID
-    Default: invalid
-  GoogleClientSecret:
-    Type: String
-    Description: Google OAuth Client Secret
-    Default: invalid
   DomainName:
     Type: String
     Description: Domain name to host
@@ -25,15 +15,6 @@ Parameters:
   PipelineExecutionRole:
     Type: String
     Description: "Pipeline execution role ARN"
-  EmailDomainWhitelist:
-    Type: String
-    Description: "Email domain whitelist"
-    Default: ""
-  EmailWhitelist:
-    Type: String
-    Description: "Email whitelist"
-    Default: ""
-
 
 Resources:
   HostingService:

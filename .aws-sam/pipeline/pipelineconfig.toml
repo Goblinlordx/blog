@@ -1,0 +1,23 @@
+version = 0.1
+[default.pipeline_bootstrap.parameters]
+oidc_provider_url = "https://token.actions.githubusercontent.com"
+oidc_client_id = "sts.amazonaws.com"
+github_org = "Goblinlordx"
+github_repo = "blog"
+deployment_branch = "main"
+oidc_provider = "github-actions"
+permissions_provider = "OpenID Connect (OIDC)"
+
+[stage.pipeline_bootstrap.parameters]
+pipeline_execution_role = "arn:aws:iam::837930595040:role/aws-sam-cli-managed-stage-pi-PipelineExecutionRole-1CPAC5CDBPILW"
+cloudformation_execution_role = "arn:aws:iam::837930595040:role/aws-sam-cli-managed-stage-CloudFormationExecutionR-V74RIH4EVPR9"
+artifacts_bucket = "aws-sam-cli-managed-stage-pipelin-artifactsbucket-ktwgzgkm0rwy"
+image_repository = ""
+region = "ap-northeast-2"
+
+[prod.pipeline_bootstrap.parameters]
+pipeline_execution_role = "arn:aws:iam::837930595040:role/aws-sam-cli-managed-prod-pip-PipelineExecutionRole-1LTTYHMVZI4M4"
+cloudformation_execution_role = "arn:aws:iam::837930595040:role/aws-sam-cli-managed-prod-CloudFormationExecutionR-9YG8ONUENJFL"
+artifacts_bucket = "aws-sam-cli-managed-prod-pipeline-artifactsbucket-35pn8ccuzky7"
+image_repository = ""
+region = "ap-northeast-2"

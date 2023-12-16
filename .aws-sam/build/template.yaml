@@ -1,0 +1,62 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform:
+- AWS::Serverless-2016-10-31
+Parameters:
+  DomainName:
+    Type: String
+    Description: Domain name to host
+  HostedZoneId:
+    Type: String
+    Description: The Route53 hosted zone ID used for the domain
+  AcmCertificateArn:
+    Type: String
+    Description: ACM Certificate ARN for hosted zone domain
+  PipelineExecutionRole:
+    Type: String
+    Description: Pipeline execution role ARN
+  EmailDomainWhitelist:
+    Type: String
+    Description: Email domain whitelist
+    Default: ''
+  EmailWhitelist:
+    Type: String
+    Description: Email whitelist
+    Default: ''
+Resources:
+  HostingService:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: HostingService/template.yaml
+      Parameters:
+        DomainName:
+          Ref: DomainName
+        HostedZoneId:
+          Ref: HostedZoneId
+        AcmCertificateArn:
+          Ref: AcmCertificateArn
+        PipelineExecutionRole:
+          Ref: PipelineExecutionRole
+    Metadata:
+      SamResourceId: HostingService
+Outputs:
+  BucketName:
+    Description: Bucket name
+    Value:
+      Fn::GetAtt:
+      - HostingService
+      - Outputs.BucketName
+  DistributionId:
+    Description: CloudFront Distribution Id
+    Value:
+      Fn::GetAtt:
+      - HostingService
+      - Outputs.DistributionId
+  DistributionURL:
+    Description: Distribution URL
+    Value:
+      Fn::Sub:
+      - https://${domain}/
+      - domain:
+          Fn::GetAtt:
+          - HostingService
+          - Outputs.DistributionURL
