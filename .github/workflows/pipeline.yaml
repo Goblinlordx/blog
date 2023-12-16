@@ -111,6 +111,7 @@ jobs:
             --region ${PROD_REGION} \
             --s3-bucket ${PROD_ARTIFACTS_BUCKET} \
             --no-fail-on-empty-changeset \
+            --no-confirm-changeset \
             --role-arn ${PROD_CLOUDFORMATION_EXECUTION_ROLE} \
             --tags AppManagerCFNStackKey=${PROD_STACK_NAME} \
             --parameter-overrides "PipelineExecutionRole=\"${PROD_PIPELINE_EXECUTION_ROLE_NAME}\" DomainName=\"${{ vars.DOMAIN_NAME }}\" HostedZoneId=\"${{ vars.HOSTED_ZONE_ID }}\" AcmCertificateArn=\"${{ vars.ACM_CERTIFICATE_ARN }}\""
