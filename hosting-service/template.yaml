@@ -20,13 +20,13 @@ Parameters:
     Type: String
     Description: "The error document, ignored in SPA mode"
     Default: "404.html"
-  RewriteMode:
-    Type: String
-    Description: "The request rewrite behaviour type"
-    Default: "STATIC"
-    AllowedValues:
-    - STATIC
-    - SPA
+  # RewriteMode:
+  #   Type: String
+  #   Description: "The request rewrite behaviour type"
+  #   Default: "STATIC"
+  #   AllowedValues:
+  #   - STATIC
+  #   - SPA
   CloudFrontPriceClass:
     Type: String
     Description: "The price class for CloudFront distribution"
