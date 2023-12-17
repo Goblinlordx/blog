@@ -41,7 +41,7 @@ Parameters:
 
 Conditions:
   IsStaticMode: !Equals [!Ref RewriteMode, "STATIC"]
-  # IsSPAMode: !Equals [!Ref RewriteMode, "SPA"]
+  IsSPAMode: !Equals [!Ref RewriteMode, "SPA"]
 
 Resources:
   Bucket:
@@ -64,6 +64,47 @@ Resources:
     Properties:
       CloudFrontOriginAccessIdentityConfig:
         Comment: !Ref AWS::StackName
+
+  RewriteRequestStaticFunction:
+    Condition: IsStaticMode
+    Type: AWS::CloudFront::Function
+    Properties: 
+      Name: !Sub "${AWS::StackName}-req-static"
+      AutoPublish: true
+      FunctionCode: !Sub |
+        function handler(event) {
+          var request = event.request;
+          var uri = request.uri
+          if (uri.endsWith('/')) {
+              request.uri += '${IndexDocument}';
+          } else if (!uri.includes('.')) {
+              request.uri += '/${IndexDocument}';
+          }
+          return request;
+        }
+      FunctionConfig: 
+        Comment: !Sub "rewrite all paths to /${IndexDocument}"
+        Runtime: cloudfront-js-1.0
+
+  RewriteRequestSpaFunction:
+    Condition: IsSPAMode
+    Type: AWS::CloudFront::Function
+    Properties: 
+      Name: !Sub "${AWS::StackName}-req-spa"
+      AutoPublish: true
+      FunctionCode: !Sub |
+        function handler(event) {
+          var request = event.request;
+          var uri = request.uri
+          if (uri.includes('.') && !uri.endsWith('.html')) {
+              return request;
+          }
+          request.uri = '/${IndexDocument}';
+          return request;
+        }
+      FunctionConfig: 
+        Comment: !Sub "rewrite sub-directory path with trailing /${IndexDocument}"
+        Runtime: cloudfront-js-1.0
 
   Distribution:
     Type: AWS::CloudFront::Distribution
@@ -98,9 +139,13 @@ Resources:
             Cookies:
               Forward: none
           ViewerProtocolPolicy: redirect-to-https
+          FunctionAssociations:
+            - EventType: viewer-request
+              FunctionARN: !If [IsStaticMode, !GetAtt RewriteRequestStaticFunction.FunctionMetadata.FunctionARN, !GetAtt RewriteRequestSpaFunction.FunctionMetadata.FunctionARN]
         ViewerCertificate:
           AcmCertificateArn: !Ref AcmCertificateArn
           SslSupportMethod: sni-only
+
 
   DnsRecord:
     Type: AWS::Route53::RecordSet
