@@ -23,7 +23,7 @@ Parameters:
   RewriteMode:
     Type: String
     Description: "The request rewrite behaviour type"
-    Default: "SPA"
+    Default: "STATIC"
     AllowedValues:
     - STATIC
     - SPA
