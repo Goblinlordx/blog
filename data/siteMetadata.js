@@ -8,16 +8,15 @@ const siteMetadata = {
   theme: 'system', // system, dark or light
   siteUrl: 'https://blog.dev-kat.com',
   siteRepo: 'https://github.com/goblinlordx/blog',
-  siteLogo: '/static/images/logo.png',
-  socialBanner: '/static/images/twitter-card.png',
+  siteLogo: '/static/images/avatar.webp',
+  socialBanner: '/static/images/avatar.webp',
   mastodon: 'https://mastodon.social/@Goblinlord',
   email: 'goblinlordx+blog@gmail.com',
   github: 'https://github.com/goblinlordx',
   twitter: 'https://twitter.com/Goblinlord_X',
-  facebook: 'https://www.facebook.com/ben.baldivia/',
-  youtube: 'https://www.youtube.com/@goblinlordx6108',
   linkedin: 'https://www.linkedin.com/in/benjamin-baldivia-500a64103/',
   locale: 'en-US',
+  autoloadComments: true,
   analytics: {
     // If you want to use an analytics provider you have to add it to the
     // content security policy in the `next.config.js` file.
