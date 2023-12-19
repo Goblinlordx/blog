@@ -11,7 +11,7 @@ const projectsData = [
     title: 'GP Former',
     description: `A simple randomizer for the board game Gaia Project. Developed with React
     and provided as a SPA (Single Page Application). It uses a PRNG (Pseudo-Random Number
-    Generator) for providing re peatable generation using the same seed value.`,
+    Generator) for providing repeatable generation using the same seed value.`,
     imgSrc: '/static/images/projects/gp_former.webp',
     href: 'https://github.com/Goblinlordx/gp-former',
   },
