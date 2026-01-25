@@ -1,5 +1,5 @@
 import { defineDocumentType, ComputedFields, makeSource } from 'contentlayer/source-files'
-import { writeFileSync } from 'fs'
+import { writeFileSync, readFileSync, readdirSync, statSync } from 'fs'
 import readingTime from 'reading-time'
 import GithubSlugger from 'github-slugger'
 import path from 'path'
@@ -50,7 +50,8 @@ function createTagCount(allBlogs) {
   allBlogs.forEach((file) => {
     if (file.tags && (!isProduction || file.draft !== true)) {
       file.tags.forEach((tag) => {
-        const formattedTag = GithubSlugger.slug(tag)
+        const slugger = new GithubSlugger()
+        const formattedTag = slugger.slug(tag)
         if (formattedTag in tagCount) {
           tagCount[formattedTag] += 1
         } else {
@@ -150,6 +151,33 @@ export default makeSource({
     ],
   },
   onSuccess: async (importData) => {
+    // Patch generated files to use 'with' instead of 'assert' for JSON imports
+    // This is required for Node.js 22+ support as 'assert' is deprecated/removed
+    const generatedDir = path.join(process.cwd(), '.contentlayer/generated')
+
+    function patchDir(dir) {
+      try {
+        const files = readdirSync(dir)
+        files.forEach(file => {
+          const filePath = path.join(dir, file)
+          const stat = statSync(filePath)
+          if (stat.isDirectory()) {
+            patchDir(filePath)
+          } else if (file.endsWith('.mjs')) {
+            const content = readFileSync(filePath, 'utf-8')
+            if (content.includes(' assert {')) {
+              const newContent = content.replace(/ assert {/g, ' with {')
+              writeFileSync(filePath, newContent)
+            }
+          }
+        })
+      } catch (e) {
+        console.error('Error patching contentlayer files:', e)
+      }
+    }
+
+    patchDir(generatedDir)
+
     const { allBlogs } = await importData()
     createTagCount(allBlogs)
     createSearchIndex(allBlogs)

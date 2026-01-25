@@ -15,6 +15,7 @@ const siteMetadata = {
   github: 'https://github.com/goblinlordx',
   twitter: 'https://twitter.com/Goblinlord_X',
   linkedin: 'https://www.linkedin.com/in/benjamin-baldivia-500a64103/',
+  rss: '/feed.xml',
   locale: 'en-US',
   autoloadComments: true,
   analytics: {
