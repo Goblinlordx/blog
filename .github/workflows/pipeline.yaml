@@ -40,7 +40,7 @@ jobs:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - run: |
         # trigger the tests here
 
@@ -49,7 +49,7 @@ jobs:
     needs: [test]
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - uses: aws-actions/setup-sam@v2
       with:
         use-installer: true
@@ -73,7 +73,7 @@ jobs:
           --region ${PROD_REGION} \
           --output-template-file packaged-prod.yaml
 
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       with:
         name: packaged-prod.yaml
         path: packaged-prod.yaml
@@ -89,11 +89,11 @@ jobs:
       bucket_name: ${{ steps.get-bucket-name.outputs.bucket_name }}
       cfn_id: ${{ steps.get-cfn-id.outputs.cfn_id }}
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - uses: aws-actions/setup-sam@v2
       with:
         use-installer: true
-    - uses: actions/download-artifact@v3
+    - uses: actions/download-artifact@v4
       with:
         name: packaged-prod.yaml
 
@@ -130,7 +130,7 @@ jobs:
     needs: []
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
       with:
@@ -149,7 +149,7 @@ jobs:
       run: yarn build
     # - name: Run tests
     #   run: npm test
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       with:
         name: client
         path: out/*
@@ -160,7 +160,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Download client build artifacts
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: client
         path: out
