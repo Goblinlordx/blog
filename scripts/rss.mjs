@@ -1,4 +1,4 @@
-import { writeFileSync, mkdirSync } from 'fs'
+import { writeFileSync, mkdirSync, existsSync } from 'fs'
 import path from 'path'
 import GithubSlugger from 'github-slugger'
 import { escape } from 'pliny/utils/htmlEscaper.js'
@@ -35,12 +35,24 @@ const generateRss = (config, posts, page = 'feed.xml') => `
   </rss>
 `
 
+const writeRssFile = (relativePath, content) => {
+  const publicPath = path.join('public', relativePath)
+  mkdirSync(path.dirname(publicPath), { recursive: true })
+  writeFileSync(publicPath, content)
+
+  if (existsSync('out')) {
+    const outPath = path.join('out', relativePath)
+    mkdirSync(path.dirname(outPath), { recursive: true })
+    writeFileSync(outPath, content)
+  }
+}
+
 async function generateRSS(config, allBlogs, page = 'feed.xml') {
   const publishPosts = allBlogs.filter((post) => post.draft !== true)
   // RSS for blog post
   if (publishPosts.length > 0) {
     const rss = generateRss(config, sortPosts(publishPosts))
-    writeFileSync(`./public/${page}`, rss)
+    writeRssFile(page, rss)
   }
 
   if (publishPosts.length > 0) {
@@ -50,9 +62,7 @@ async function generateRSS(config, allBlogs, page = 'feed.xml') {
         post.tags.map((t) => slugger.slug(t)).includes(tag)
       )
       const rss = generateRss(config, filteredPosts, `tags/${tag}/${page}`)
-      const rssPath = path.join('public', 'tags', tag)
-      mkdirSync(rssPath, { recursive: true })
-      writeFileSync(path.join(rssPath, page), rss)
+      writeRssFile(path.join('tags', tag, page), rss)
     }
   }
 }
