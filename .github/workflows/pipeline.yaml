@@ -143,7 +143,7 @@ jobs:
           role-duration-seconds: 3600
           role-skip-session-tagging: true
       - name: Pull dependencies
-        run: npm ci
+        run: npm ci --legacy-peer-deps
       - name: Run build process
         run: npm run build
       # - name: Run tests
