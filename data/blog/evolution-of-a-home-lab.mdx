@@ -21,11 +21,11 @@ Today, as I sit in South Korea with 26TB drives on my desk and a "single-node" s
 
 ## Phase 1: The Go-Powered Pioneer (2018–2021)
 
-In 2018, the landscape was different. I was operating with a minimalist mindset, prioritizing low power and low cost above all else. The heart of my operation was a Raspberry Pi 3. There was an additional update around 2019 to upgrade to a Raspberry Pi 4b.
+In 2018, the landscape was different. I was operating with a minimalist mindset, prioritizing low power and low cost above all else. The heart of my operation was a Raspberry Pi 3 ([Amazon][rpi3]). There was an additional update around 2019 to upgrade to a Raspberry Pi 4b ([Amazon][rpi4b]).
 
 ### The Hardware Constraints
 
-The setup was as "lean" as it gets. I had the Pi 4b paired with an 8TB WD Elements USB drive. At the time, 8TB felt like an ocean of space, but the hardware limitations of the Pi 4b were significant.
+The setup was as "lean" as it gets. I had the Pi 4b paired with an 8TB WD Elements USB drive ([Amazon][wd-elements-8tb]). At the time, 8TB felt like an ocean of space, but the hardware limitations of the Pi 4b were significant.
 
 Because the Pi 4b shares a single internal bus between its USB ports and its Ethernet port, I was constantly fighting for bandwidth. If I was moving a new batch of cat videos onto the drive while trying to watch one in the other room, the system would often stutter. It was a functional proof-of-concept, but it lacked the headroom for growth.
 
@@ -63,7 +63,7 @@ By 2022, the "Kodi Sync" model had reached its breaking point. The friction of m
 
 The hardware upgrade was a deliberate move into the x86 ecosystem. I migrated the data to an ASRock NUC BOX-1135G7 ([Amazon][asrock-nuc-box-1135g7]), featuring the Intel i5-1135G7.
 
-This wasn't just about raw CPU clock speed; it was about Intel QuickSync. This dedicated hardware core provided robust, hardware-accelerated encoding and decoding for H.264 and H.265 (HEVC). In the world of high-quality cat videos, being able to transcode on the fly without pegging the CPU to 100% was the "killer feature" I had been missing. To support this new horsepower, I added a 14TB WD Elements drive to the stack, bringing my total capacity to 22TB.
+This wasn't just about raw CPU clock speed; it was about Intel QuickSync. This dedicated hardware core provided robust, hardware-accelerated encoding and decoding for H.264 and H.265 (HEVC). In the world of high-quality cat videos, being able to transcode on the fly without pegging the CPU to 100% was the "killer feature" I had been missing. To support this new horsepower, I added a 14TB WD Elements drive ([Amazon][wd-elements-14tb]) to the stack, bringing my total capacity to 22TB.
 
 ### The Software Shift: Jellyfin as the Source of Truth
 
@@ -114,7 +114,7 @@ As we move into 2026, the home lab has transitioned from a hobbyist project into
 
 ### The Storage "Whack-a-Mole"
 
-The most persistent challenge of the current state is the lack of a unified storage layer. Because the archive is spread across four distinct external USB volumes—the legacy 8TB, the Phase 2 14TB, and the two new 26TB Seagate Expansion drives—there is no cohesive "pool."
+The most persistent challenge of the current state is the lack of a unified storage layer. Because the archive is spread across four distinct external USB volumes—the legacy 8TB, the Phase 2 14TB, and the two new 26TB Seagate Expansion ([Amazon][seagate-expansion-26tb]) drives—there is no cohesive "pool."
 
 Instead, I am forced to play a manual game of "whack-a-mole" with drive space. When one drive hits its limit, I must manually identify folders to move, verify the transfer, and then update the pathing in every service from Jellyfin to Audiobookshelf. At this scale, moving 5TB of cat videos to rebalance a drive isn't just a click—it's a multi-hour operation that requires constant monitoring. The "Single Node Monolith" provides no automated way to span data across these physical disks, making storage expansion a chore rather than a feature.
 
@@ -194,5 +194,10 @@ Whether you are looking to replicate this specific architecture or simply want t
 [4]: https://romm.app/
 [5]: https://prometheus.io/
 [6]: https://grafana.com/
+[rpi3]: https://amzn.to/4biNC9D
+[rpi4b]: https://amzn.to/4bfoYXz
+[wd-elements-8tb]: https://amzn.to/3NEDT3N
+[wd-elements-14tb]: https://amzn.to/3NG1fWC
+[seagate-expansion-26tb]: https://amzn.to/4qHhIbV
 [asrock-nuc-box-1135g7]: https://amzn.to/4rfItE1
 [rss]: /feed.xml
