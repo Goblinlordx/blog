@@ -5,13 +5,19 @@ import Script from 'next/script'
 export default function Busuanzi() {
   return (
     <>
-      <Script
-        src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"
-        strategy="afterInteractive"
-      />
-      <span className="flex items-center text-sm text-gray-500 dark:text-gray-400">
-        <span id="busuanzi_container_page_pv" style={{ display: 'none' }}>
-          Views: <span id="busuanzi_value_page_pv" />
+      <Script src="https://busuanzi.9420.ltd/js" strategy="afterInteractive" />
+      <span className="flex flex-col text-sm text-gray-500 dark:text-gray-400">
+        <span className="flex items-center">
+          Views:{' '}
+          <span id="busuanzi_page_pv" className="ml-2">
+            equal to number of cats that have ever existed
+          </span>
+        </span>
+        <span className="mt-1 flex items-center">
+          Unique Views:{' '}
+          <span id="busuanzi_page_uv" className="ml-2">
+            equal to number of cats that have ever existed
+          </span>
         </span>
       </span>
     </>
