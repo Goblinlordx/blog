@@ -158,7 +158,7 @@ export default makeSource({
     function patchDir(dir) {
       try {
         const files = readdirSync(dir)
-        files.forEach(file => {
+        files.forEach((file) => {
           const filePath = path.join(dir, file)
           const stat = statSync(filePath)
           if (stat.isDirectory()) {

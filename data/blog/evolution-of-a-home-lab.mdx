@@ -1,7 +1,8 @@
 ---
 title: Evolution of a Home Lab
 date: '2026-01-25'
-tags: ['home-lab', 'raspberry-pi', 'cluster', 'home-lab-history', 'kodi', 'jellyfin', 'audiobookshelf']
+tags:
+  ['home-lab', 'raspberry-pi', 'cluster', 'home-lab-history', 'kodi', 'jellyfin', 'audiobookshelf']
 draft: false
 layout: PostBanner
 images: ['/static/images/blog/evolution-of-a-home-lab/banner.webp']
@@ -19,19 +20,23 @@ Today, as I sit in South Korea with 26TB drives on my desk and a "single-node" s
 ![Phase 1 Setup](/static/images/blog/evolution-of-a-home-lab/evolution-of-a-home-lab-p1.webp)
 
 ## Phase 1: The Go-Powered Pioneer (2018–2021)
+
 In 2018, the landscape was different. I was operating with a minimalist mindset, prioritizing low power and low cost above all else. The heart of my operation was a Raspberry Pi 3. There was an additional update around 2019 to upgrade to a Raspberry Pi 4b.
 
 ### The Hardware Constraints
+
 The setup was as "lean" as it gets. I had the Pi 4b paired with an 8TB WD Elements USB drive. At the time, 8TB felt like an ocean of space, but the hardware limitations of the Pi 4b were significant.
 
 Because the Pi 4b shares a single internal bus between its USB ports and its Ethernet port, I was constantly fighting for bandwidth. If I was moving a new batch of cat videos onto the drive while trying to watch one in the other room, the system would often stutter. It was a functional proof-of-concept, but it lacked the headroom for growth.
 
 ### The Custom Logic: Merging the Filesystems
+
 I wasn't satisfied with standard file-sharing protocols or simple directory listings. I wanted a way to merge disparate filesystem locations into a single, unified directory structure so that my library felt cohesive regardless of which physical drive or folder a file lived in.
 
 To solve this, I wrote a custom file server in Go. This Go server acted as a "Union" layer, allowing me to present multiple storage paths to my clients as one cohesive library. This gave me incredible flexibility in how I organized my cat videos, but it also meant I was responsible for the stability and performance of the code.
 
 ### The Client Problem: The Kodi Era
+
 My primary interface for accessing these files was Kodi. In this architecture, the clients were "thick," meaning they did almost all of the heavy lifting. I deployed Raspberry Pi units locally, but the scope was larger than just my own living room. I had family members on the other side of the world running their own Kodi clients, all pointed back to my single server.
 
 This led to several critical pain points:
@@ -51,14 +56,17 @@ I had the content, but I didn't have a "Single Source of Truth." I was spending 
 ![Phase 2 Setup](/static/images/blog/evolution-of-a-home-lab/evolution-of-a-home-lab-p2.webp)
 
 ## Phase 2: The Jellyfin Revolution (2022–2024)
+
 By 2022, the "Kodi Sync" model had reached its breaking point. The friction of managing remote clients and the inherent limitations of the Raspberry Pi 4b hardware meant it was time for a total paradigm shift. I needed to move from a "Passive File Host" model to an "Active Streaming Service" model.
 
 ### The Hardware Leap: ASRock NUC BOX-1135G7
+
 The hardware upgrade was a deliberate move into the x86 ecosystem. I migrated the data to an ASRock NUC BOX-1135G7 ([Amazon][asrock-nuc-box-1135g7]), featuring the Intel i5-1135G7.
 
 This wasn't just about raw CPU clock speed; it was about Intel QuickSync. This dedicated hardware core provided robust, hardware-accelerated encoding and decoding for H.264 and H.265 (HEVC). In the world of high-quality cat videos, being able to transcode on the fly without pegging the CPU to 100% was the "killer feature" I had been missing. To support this new horsepower, I added a 14TB WD Elements drive to the stack, bringing my total capacity to 22TB.
 
 ### The Software Shift: Jellyfin as the Source of Truth
+
 The biggest change, however, was moving to Jellyfin. This solved the "Client Problem" by flipping the entire architecture on its head. Instead of the clients telling the server what they saw, the server became the absolute authority.
 
 - **The Thin Client Model**: Jellyfin turned every device into a "thin" viewer. Whether a family member was using a dedicated streaming box, a phone, or just a normal web browser from another country, they no longer maintained their own databases. They simply viewed the server's database.
@@ -68,6 +76,7 @@ The biggest change, however, was moving to Jellyfin. This solved the "Client Pro
 - **Adaptive Streaming**: This is where the NUC’s hardware acceleration really shone. Because Jellyfin supported transcoding, the server could now adapt the content to the client's needs. If a remote user had a slow internet connection or a device that didn't support a specific file format, the server could downscale or repackage the cat video in real-time. This made the library accessible to anyone, anywhere, regardless of their hardware or bandwidth.
 
 ### The Integrated Service Stack
+
 By the end of Phase 2, the NUC was no longer just running a single service. To handle the diversity of the archive, I had deployed a specialized stack of tools to ensure every type of "cat-related" media had a first-class experience.
 
 ![Current Setup](/static/images/blog/evolution-of-a-home-lab/evolution-of-a-home-lab-stack.webp)
@@ -83,6 +92,7 @@ By the end of Phase 2, the NUC was no longer just running a single service. To h
 - **[RomM][4]**: An intuitive manager for my library of cat games (retro emulation).
 
 #### Observability & Administration:
+
 As the number of users and services grew, I could no longer fly blind. I needed to see how the NUC was handling the load in real-time. I implemented a professional-grade monitoring stack to keep the lights on:
 
 - **[Prometheus][5]**: For time-series data collection and alerting.
@@ -99,14 +109,17 @@ We had reached the functional peak of the "Single Node Monolith."
 ![Current Setup](/static/images/blog/evolution-of-a-home-lab/evolution-of-a-home-lab-current.webp)
 
 ## The Current State: The "Single Node" Ceiling
+
 As we move into 2026, the home lab has transitioned from a hobbyist project into a vital utility. However, the very success of the "Jellyfin Revolution" has led to a structural stalemate. While the software stack is more capable than ever, the physical and logical architecture is straining under the weight of nearly 74TB of raw data. We are no longer just running a server; we are managing a data center’s worth of archives out of a single, overburdened NUC node.
 
 ### The Storage "Whack-a-Mole"
+
 The most persistent challenge of the current state is the lack of a unified storage layer. Because the archive is spread across four distinct external USB volumes—the legacy 8TB, the Phase 2 14TB, and the two new 26TB Seagate Expansion drives—there is no cohesive "pool."
 
 Instead, I am forced to play a manual game of "whack-a-mole" with drive space. When one drive hits its limit, I must manually identify folders to move, verify the transfer, and then update the pathing in every service from Jellyfin to Audiobookshelf. At this scale, moving 5TB of cat videos to rebalance a drive isn't just a click—it's a multi-hour operation that requires constant monitoring. The "Single Node Monolith" provides no automated way to span data across these physical disks, making storage expansion a chore rather than a feature.
 
 ### The Specter of Data Loss
+
 With 74TB of unique data, the statistical probability of a hardware failure is now a daily concern. In our current configuration, we have zero redundancy.
 
 - **The High-Stakes Gamble**: If one of the 26TB drives clicks its last breath today, roughly 35% of the entire archive vanishes instantly.
@@ -116,6 +129,7 @@ With 74TB of unique data, the statistical probability of a hardware failure is n
 We have reached a point where the value of the "cat video" archive has far outpaced the safety of the hardware holding it.
 
 ### The Codec Ceiling: The AV1 Problem
+
 Finally, we have hit a hard wall regarding efficiency. The world is rapidly adopting AV1, a codec that provides significantly better compression ratios than H.265. For an archive this large, migrating to AV1 would effectively "gift" me several terabytes of free space by reducing file sizes without sacrificing quality.
 
 However, the i5-1135G7 is a pre-AV1 generation chip. While it is a H.264/H.265 champion, it lacks native hardware-accelerated AV1 encoding. To gain this capability and begin modernizing the library, I cannot simply add a card or update a driver; the "Single Node" must be replaced.
@@ -123,12 +137,15 @@ However, the i5-1135G7 is a pre-AV1 generation chip. While it is a H.264/H.265 c
 ---
 
 ## Phase 3: The Scale-Out Blueprint (The Future)
+
 The transition from a "Single Node Monolith" to a Distributed Cluster marks the most ambitious era of the lab. The goal for Phase 3 is a platform-agnostic architecture—a blueprint that allows a beginner to start with a single low-cost node and scale horizontally without ever requiring an architectural "forklift upgrade."
 
 ### 1. Multi-Tiered Storage & Value-Based Integrity
+
 In this blueprint, we stop managing drives and start managing Storage Classes. This allows the cluster to handle data based on its permanence, access frequency, and the "cost of recovery."
 
 #### The "Hot" Tier: Ephemeral & High-Performance
+
 This tier is for the operational data that drives the lab: system OS drives, metadata caches, and active databases.
 
 Redundancy Philosophy: We treat this data as functionally ephemeral. While we use mirroring for performance and uptime, we accept a lower long-term safety threshold. If the "hot" data is lost, it can be rebuilt from the "Cold" archive or configurations—even if the process is slow.
@@ -136,6 +153,7 @@ Redundancy Philosophy: We treat this data as functionally ephemeral. While we us
 Integrity through Velocity: Because this data is accessed constantly, its integrity is naturally validated by the high volume of reads. Any "bit rot" is caught immediately by ZFS checksums during normal operations.
 
 #### The "Cold" Tier: The Resilient Archive
+
 This is the "Deep Storage" for the bulk of the library—the 74TB (and growing) of cat videos, cat audio recordings, and transliterated cat novels.
 
 - **The Cost of Loss**: Unlike the hot tier, the "cost" of losing the cold archive is catastrophic. It could take years of bandwidth and manual effort to re-retrieve and re-organize this quantity of data.
@@ -145,6 +163,7 @@ This is the "Deep Storage" for the bulk of the library—the 74TB (and growing) 
 - **Evolution to Erasure Coding**: We start with simple replication to keep entry costs low for beginners. However, as the cluster adds more nodes, the blueprint facilitates a move to Erasure Coding (EC). This provides the same (or better) safety margins as mirroring but with significantly less storage overhead, maximizing the value of those 26TB drives.
 
 ### 2. A Universal Blueprint for Growth
+
 The defining feature of Phase 3 is its fractal scalability. The logic remains identical whether you have one node or twenty.
 
 - **The Single-Node Seed**: A beginner starts with one machine. They set up the "Hot" and "Cold" tiers locally. Even on one node, they benefit from the checksumming and the organizational structure that prepares them for the future.
@@ -154,6 +173,7 @@ The defining feature of Phase 3 is its fractal scalability. The logic remains id
 - **Hardware Specialization**: This blueprint allows for a "mutt" cluster. An older node (like my original NUC) can act as a low-power Storage Controller, while a newer node handles the heavy lifting of modern processing.
 
 ### 3. Decoupled Compute & Fault Tolerance
+
 By decoupling compute from storage, we finally eliminate the "Single Point of Failure."
 
 - **Service Mobility**: If a node needs maintenance, services migrate to another node in the cluster. For family members across the world, the experience remains uninterrupted.
@@ -161,6 +181,7 @@ By decoupling compute from storage, we finally eliminate the "Single Point of Fa
 - **Flexible Hardware Adoption**: We can flexibly adapt to the ever-changing landscape of video encoding. Adding support for new hardware-accelerated formats—like AV1—is as simple as adding a single new node that supports it, rather than replacing the entire heart of the lab.
 
 ## Conclusion: The Journey Begins
+
 This article marks the first in a new series documenting the complete transformation of my home lab. We have reviewed the "cat video" archives of the past and analyzed the constraints of the present, but the real work starts now.
 
 Over the coming months, I will be documenting every step of the Phase 3 journey—from the initial high-level design and hardware selection to the gritty details of implementation and the final realization of a truly scalable cluster.

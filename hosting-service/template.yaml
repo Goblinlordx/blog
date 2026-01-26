@@ -5,43 +5,43 @@ Transform:
 Parameters:
   DomainName:
     Type: String
-    Description: "The domain name of website"
+    Description: 'The domain name of website'
   HostedZoneId:
     Type: String
-    Description: "The Route53 hosted zone ID used for the domain"
+    Description: 'The Route53 hosted zone ID used for the domain'
   AcmCertificateArn:
     Type: String
-    Description: "The certificate arn for the domain name provided"
+    Description: 'The certificate arn for the domain name provided'
   IndexDocument:
     Type: String
-    Description: "The index document"
-    Default: "index.html"
+    Description: 'The index document'
+    Default: 'index.html'
   ErrorDocument:
     Type: String
-    Description: "The error document, ignored in SPA mode"
-    Default: "404.html"
+    Description: 'The error document, ignored in SPA mode'
+    Default: '404.html'
   RewriteMode:
     Type: String
-    Description: "The request rewrite behaviour type"
-    Default: "STATIC"
+    Description: 'The request rewrite behaviour type'
+    Default: 'STATIC'
     AllowedValues:
-    - STATIC
-    - SPA
+      - STATIC
+      - SPA
   CloudFrontPriceClass:
     Type: String
-    Description: "The price class for CloudFront distribution"
-    Default: "PriceClass_200"
+    Description: 'The price class for CloudFront distribution'
+    Default: 'PriceClass_200'
     AllowedValues:
-    - PriceClass_100
-    - PriceClass_200
-    - PriceClass_All
+      - PriceClass_100
+      - PriceClass_200
+      - PriceClass_All
   PipelineExecutionRole:
     Type: String
-    Description: "Pipeline execution role ARN"
+    Description: 'Pipeline execution role ARN'
 
 Conditions:
-  IsStaticMode: !Equals [!Ref RewriteMode, "STATIC"]
-  IsSPAMode: !Equals [!Ref RewriteMode, "SPA"]
+  IsStaticMode: !Equals [!Ref RewriteMode, 'STATIC']
+  IsSPAMode: !Equals [!Ref RewriteMode, 'SPA']
 
 Resources:
   Bucket:
@@ -51,13 +51,13 @@ Resources:
     Type: AWS::S3::BucketPolicy
     Properties:
       Bucket: !Ref Bucket
-      PolicyDocument: 
-        Statement: 
-        - Effect: "Allow"
-          Action: "s3:GetObject"
-          Resource: !Sub "arn:aws:s3:::${Bucket}/*"
-          Principal: 
-            AWS: !Sub 'arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${OriginAccessIdentity}'
+      PolicyDocument:
+        Statement:
+          - Effect: 'Allow'
+            Action: 's3:GetObject'
+            Resource: !Sub 'arn:aws:s3:::${Bucket}/*'
+            Principal:
+              AWS: !Sub 'arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${OriginAccessIdentity}'
 
   OriginAccessIdentity:
     Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
@@ -68,8 +68,8 @@ Resources:
   RewriteRequestStaticFunction:
     Condition: IsStaticMode
     Type: AWS::CloudFront::Function
-    Properties: 
-      Name: !Sub "${AWS::StackName}-req-static"
+    Properties:
+      Name: !Sub '${AWS::StackName}-req-static'
       AutoPublish: true
       FunctionCode: !Sub |
         function handler(event) {
@@ -82,15 +82,15 @@ Resources:
           }
           return request;
         }
-      FunctionConfig: 
-        Comment: !Sub "rewrite all paths to /${IndexDocument}"
+      FunctionConfig:
+        Comment: !Sub 'rewrite all paths to /${IndexDocument}'
         Runtime: cloudfront-js-1.0
 
   RewriteRequestSpaFunction:
     Condition: IsSPAMode
     Type: AWS::CloudFront::Function
-    Properties: 
-      Name: !Sub "${AWS::StackName}-req-spa"
+    Properties:
+      Name: !Sub '${AWS::StackName}-req-spa'
       AutoPublish: true
       FunctionCode: !Sub |
         function handler(event) {
@@ -102,8 +102,8 @@ Resources:
           request.uri = '/${IndexDocument}';
           return request;
         }
-      FunctionConfig: 
-        Comment: !Sub "rewrite sub-directory path with trailing /${IndexDocument}"
+      FunctionConfig:
+        Comment: !Sub 'rewrite sub-directory path with trailing /${IndexDocument}'
         Runtime: cloudfront-js-1.0
 
   Distribution:
@@ -116,23 +116,23 @@ Resources:
         HttpVersion: http2
         DefaultRootObject: !Ref IndexDocument
         Aliases:
-        - !Ref DomainName
+          - !Ref DomainName
         Origins:
-        - DomainName: !Sub "${Bucket}.s3.${AWS::Region}.amazonaws.com"
-          Id: bucketOrigin
-          S3OriginConfig:
-            OriginAccessIdentity: !Sub origin-access-identity/cloudfront/${OriginAccessIdentity}
+          - DomainName: !Sub '${Bucket}.s3.${AWS::Region}.amazonaws.com'
+            Id: bucketOrigin
+            S3OriginConfig:
+              OriginAccessIdentity: !Sub origin-access-identity/cloudfront/${OriginAccessIdentity}
         CustomErrorResponses:
-        - ErrorCachingMinTTL: 86400
-          ErrorCode: 403 # object not found in bucket
-          ResponseCode: !If [IsStaticMode, 404, 200]
-          ResponsePagePath: !If [IsStaticMode, !Sub "/${ErrorDocument}", !Sub "/${IndexDocument}"]
+          - ErrorCachingMinTTL: 86400
+            ErrorCode: 403 # object not found in bucket
+            ResponseCode: !If [IsStaticMode, 404, 200]
+            ResponsePagePath: !If [IsStaticMode, !Sub '/${ErrorDocument}', !Sub '/${IndexDocument}']
         DefaultCacheBehavior:
           Compress: 'true'
           AllowedMethods:
-          - GET
-          - HEAD
-          - OPTIONS
+            - GET
+            - HEAD
+            - OPTIONS
           TargetOriginId: bucketOrigin
           ForwardedValues:
             QueryString: 'false'
@@ -141,11 +141,15 @@ Resources:
           ViewerProtocolPolicy: redirect-to-https
           FunctionAssociations:
             - EventType: viewer-request
-              FunctionARN: !If [IsStaticMode, !GetAtt RewriteRequestStaticFunction.FunctionMetadata.FunctionARN, !GetAtt RewriteRequestSpaFunction.FunctionMetadata.FunctionARN]
+              FunctionARN:
+                !If [
+                  IsStaticMode,
+                  !GetAtt RewriteRequestStaticFunction.FunctionMetadata.FunctionARN,
+                  !GetAtt RewriteRequestSpaFunction.FunctionMetadata.FunctionARN,
+                ]
         ViewerCertificate:
           AcmCertificateArn: !Ref AcmCertificateArn
           SslSupportMethod: sni-only
-
 
   DnsRecord:
     Type: AWS::Route53::RecordSet
@@ -155,7 +159,7 @@ Resources:
       Type: A
       AliasTarget:
         DNSName: !GetAtt Distribution.DomainName
-        HostedZoneId: "Z2FDTNDATAQYW2" # CloudFront
+        HostedZoneId: 'Z2FDTNDATAQYW2' # CloudFront
 
   PipelineDeployementRolePolicy:
     Type: AWS::IAM::Policy
@@ -164,24 +168,22 @@ Resources:
       Roles: [!Ref PipelineExecutionRole]
       PolicyDocument:
         Statement:
-        - Effect: Allow
-          Action: ["s3:*"]
-          Resource: 
-          - !GetAtt Bucket.Arn
-          - !Sub "${Bucket.Arn}/*"
-        - Effect: Allow
-          Action: ["cloudfront:*"]
-          Resource: ["*"]
-          
+          - Effect: Allow
+            Action: ['s3:*']
+            Resource:
+              - !GetAtt Bucket.Arn
+              - !Sub '${Bucket.Arn}/*'
+          - Effect: Allow
+            Action: ['cloudfront:*']
+            Resource: ['*']
 
 Outputs:
   BucketName:
-    Description: "Bucket name"
+    Description: 'Bucket name'
     Value: !Ref Bucket
   DistributionId:
-    Description: "CloudFront distribution Id"
+    Description: 'CloudFront distribution Id'
     Value: !GetAtt Distribution.Id
   DistributionURL:
-    Description: "Distribution URL"
+    Description: 'Distribution URL'
     Value: !Ref DomainName
-    
