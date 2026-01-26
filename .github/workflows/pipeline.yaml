@@ -143,9 +143,9 @@ jobs:
           role-duration-seconds: 3600
           role-skip-session-tagging: true
       - name: Pull dependencies
-        run: yarn
+        run: npm ci
       - name: Run build process
-        run: yarn build
+        run: npm run build
       # - name: Run tests
       #   run: npm test
       - uses: actions/upload-artifact@v4
