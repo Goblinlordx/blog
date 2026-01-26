@@ -3,6 +3,8 @@
 import Script from 'next/script'
 
 export default function Busuanzi() {
+  return null
+  /*
   return (
     <>
       <Script src="https://busuanzi.9420.ltd/js" strategy="afterInteractive" />
@@ -22,4 +24,5 @@ export default function Busuanzi() {
       </span>
     </>
   )
+  */
 }
